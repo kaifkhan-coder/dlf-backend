@@ -1,6 +1,6 @@
 import express from "express";
 import Claim from "../models/Claim.js";
-import Item from "../models/Item.js";
+import Item from "../models/Items.js";
 
 const router = express.Router();
 
@@ -69,29 +69,6 @@ router.put("/:id/reject", async (req, res) => {
   res.json({ message: "Rejected" });
 });
 
-import upload from "../middleware/upload.js";
 
-router.post("/api/items", upload.single("image"), async (req, res) => {
-  try {
-    let imageUrl = "";
-
-    if (req.file) {
-      imageUrl = await uploadImage(req.file);
-    }
-
-    const item = new Item({
-      title: req.body.title,
-      description: req.body.description,
-      image: imageUrl, // ✅ stored
-    });
-
-    await item.save();
-
-    res.json({ item });
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
 export default router;

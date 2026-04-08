@@ -1,7 +1,7 @@
 import express from "express";
 import Item from "../models/Items.js";
 import auth from "../middleware/auth.js";
-import { upload } from "../middleware/upload.js";
+import upload  from "../middleware/upload.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import { generateQRCode } from "../utils/qr.js";
@@ -55,38 +55,36 @@ router.get("/:id", async (req, res) => {
 });
 
 // ✅ Create item (upload image)
-router.post("/", auth, upload.single("image"), async (req, res) => {
-  try {
-    const { type, title, category, description, location, date, color, contact } = req.body;
+// router.post("/", auth, upload.single("image"), async (req, res) => {
+//   try {
+//     const { type, title, category, description, location, date, color, contact } = req.body;
 
-    if (!type || !title || !category || !description || !location || !date) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
+//     if (!type || !title || !category || !description || !location || !date) {
+//       return res.status(400).json({ message: "Missing required fields" });
+//     }
 
-    const image = req.file ? `/uploads/${req.file.filename}` : "";
+//     const image = req.file ? `/uploads/${req.file.filename}` : "";
 
-    const item = await Item.create({
-      userId: req.user.id,
-      type,
-      title,
-      category,
-      description,
-      location,
-      date,
-      color: color || "",
-      contact: contact || "",
-      image,
-      status: "PENDING",
-    });
+//     const item = await Item.create({
+//       userId: req.user.id,
+//       type,
+//       title,
+//       category,
+//       description,
+//       location,
+//       date,
+//       color: color || "",
+//       contact: contact || "",
+//       image,
+//       status: "PENDING",
+//     });
 
-    res.status(201).json({ message: "Item created", item });
-  } catch (err) {
-    console.error("CREATE ITEM ERROR:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-import upload from "../middleware/upload.js";
+//     res.status(201).json({ message: "Item created", item });
+//   } catch (err) {
+//     console.error("CREATE ITEM ERROR:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
 router.post("/api/items", upload.single("image"), async (req, res) => {
   try {
