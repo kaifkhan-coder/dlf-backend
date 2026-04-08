@@ -19,7 +19,13 @@ app.use(cors({
   origin: true, // allow all localhost ports
   credentials: true
 }));
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
 
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION:", err);
+});
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
@@ -36,7 +42,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected ✅");
-    app.listen(process.env.PORT, () =>
+    app.listen(process.env.PORT || "0.0.0.0", () =>
       console.log(`Server: http://localhost:${process.env.PORT}`)
     );
   })
