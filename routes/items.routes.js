@@ -86,4 +86,29 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
   }
 });
 
+import upload from "../middleware/upload.js";
+
+router.post("/api/items", upload.single("image"), async (req, res) => {
+  try {
+    let imageUrl = "";
+
+    if (req.file) {
+      imageUrl = await uploadImage(req.file);
+    }
+
+    const item = new Item({
+      title: req.body.title,
+      description: req.body.description,
+      image: imageUrl, // ✅ stored
+    });
+
+    await item.save();
+
+    res.json({ item });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 export default router;

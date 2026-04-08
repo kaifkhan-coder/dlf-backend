@@ -1,45 +1,97 @@
 import express from "express";
 import Claim from "../models/Claim.js";
+import Item from "../models/Item.js";
 
 const router = express.Router();
 
-// ✅ Create claim
-router.post("/:itemId", async (req, res) => {
+// CREATE CLAIM
+router.post("/", async (req, res) => {
   try {
-    const { itemId } = req.params;
-    const { name, email, color, description } = req.body;
+    const { itemId, userName, studentId, proofText } = req.body;
 
-    const claim = await Claim.create({
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: "Invalid Item" });
+    }
+
+    if (item.status === "claimed") {
+      return res.status(400).json({ message: "Already claimed" });
+    }
+
+    const existing = await Claim.findOne({ itemId, studentId });
+    if (existing) {
+      return res.status(400).json({ message: "Already applied" });
+    }
+
+    const claim = new Claim({
       itemId,
-      name,
-      email,
-      color,
-      description,
+      userName,
+      studentId,
+      proofText
     });
 
+    await claim.save();
+
     res.json({ message: "Claim submitted", claim });
+
   } catch (err) {
-    res.status(500).json({ message: "Error creating claim" });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// ✅ Get all claims (admin)
+// GET ALL CLAIMS (Admin)
 router.get("/", async (req, res) => {
   const claims = await Claim.find().populate("itemId");
   res.json(claims);
 });
 
-// ✅ Approve / Reject
-router.patch("/:id", async (req, res) => {
-  const { status } = req.body;
+// APPROVE CLAIM
+router.put("/:id/approve", async (req, res) => {
+  const claim = await Claim.findById(req.params.id);
+  if (!claim) return res.status(404).json({ message: "Not found" });
 
-  const claim = await Claim.findByIdAndUpdate(
-    req.params.id,
-    { status },
-    { new: true }
-  );
+  claim.status = "approved";
+  await claim.save();
 
-  res.json(claim);
+  await Item.findByIdAndUpdate(claim.itemId, { status: "claimed" });
+
+  res.json({ message: "Approved" });
+});
+
+// REJECT CLAIM
+router.put("/:id/reject", async (req, res) => {
+  const claim = await Claim.findById(req.params.id);
+  if (!claim) return res.status(404).json({ message: "Not found" });
+
+  claim.status = "rejected";
+  await claim.save();
+
+  res.json({ message: "Rejected" });
+});
+
+import upload from "../middleware/upload.js";
+
+router.post("/api/items", upload.single("image"), async (req, res) => {
+  try {
+    let imageUrl = "";
+
+    if (req.file) {
+      imageUrl = await uploadImage(req.file);
+    }
+
+    const item = new Item({
+      title: req.body.title,
+      description: req.body.description,
+      image: imageUrl, // ✅ stored
+    });
+
+    await item.save();
+
+    res.json({ item });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 export default router;
