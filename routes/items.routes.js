@@ -104,13 +104,14 @@ router.post("/", async (req, res) => {
     }
 
     const item = await Item.create({
+      userId: req.user?.id || null, // no auth, so no userId
       type,
       title,
       category,
       location,
       date,
       description,
-      image, // base64 stored
+      image: , // base64 stored
       contact,
       status: "PENDING"
     });
