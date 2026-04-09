@@ -88,7 +88,15 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+    console.log("USER:", req.user); // 👈 check this
+
     const {
+      type, title, category, location, date, description, image, contact
+    } = req.body;
+
+    const item = await Item.create({
+      userId: req.user?.id || null, // allow null for unauthenticated reports (college demo)
       type,
       title,
       category,
@@ -96,22 +104,6 @@ router.post("/", async (req, res) => {
       date,
       description,
       image,
-      contact
-    } = req.body;
-
-    if (!type || !title || !category || !location || !date || !description) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    const item = await Item.create({
-      userId: req.user?.id || null, // no auth, so no userId
-      type,
-      title,
-      category,
-      location,
-      date,
-      description,
-      image: , // base64 stored
       contact,
       status: "PENDING"
     });
@@ -122,8 +114,8 @@ router.post("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("CREATE ERROR:", err);
+    res.status(500).json({ message: err.message }); // 👈 show real error
   }
 });
 

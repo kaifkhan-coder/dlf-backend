@@ -17,10 +17,10 @@ const app = express();
 
 app.use(cors({
   origin: [
-    "http://localhost:5175", // local frontend
-    "https://dlf-frontend-n5gn.vercel.app" // deployed frontend
+    "http://localhost:5175",
+    "https://dlf-frontend-n5gn.vercel.app"
   ],
-  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
