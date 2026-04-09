@@ -16,7 +16,12 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: true, // allow all localhost ports
+  origin: [
+    "http://localhost:5175", // local frontend
+    "https://dlf-frontend-n5gn.vercel.app" // deployed frontend
+  ],
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 process.on("uncaughtException", (err) => {
@@ -31,6 +36,7 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.get("/", (req, res) => res.send("API is running of Campus Trace ✅"));
 app.use("/api/auth", authRoutes);
+console.log("Items route loaded ✅");
 app.use("/api/items", itemRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", UserRoutes);
@@ -42,7 +48,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected ✅");
-    app.listen(process.env.PORT || "0.0.0.0", () =>
+    app.listen(process.env.PORT, () =>
       console.log(`Server: http://localhost:${process.env.PORT}`)
     );
   })

@@ -86,26 +86,43 @@ router.get("/:id", async (req, res) => {
 //   }
 // });
 
-router.post("/api/items", upload.single("image"), async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    let imageUrl = "";
+    const {
+      type,
+      title,
+      category,
+      location,
+      date,
+      description,
+      image,
+      contact
+    } = req.body;
 
-    if (req.file) {
-      imageUrl = await uploadImage(req.file);
+    if (!type || !title || !category || !location || !date || !description) {
+      return res.status(400).json({ message: "Missing fields" });
     }
 
-    const item = new Item({
-      title: req.body.title,
-      description: req.body.description,
-      image: imageUrl, // ✅ stored
+    const item = await Item.create({
+      type,
+      title,
+      category,
+      location,
+      date,
+      description,
+      image, // base64 stored
+      contact,
+      status: "PENDING"
     });
 
-    await item.save();
-
-    res.json({ item });
+    res.status(201).json({
+      message: "Item reported successfully ✅",
+      item
+    });
 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
