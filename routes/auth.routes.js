@@ -29,7 +29,7 @@ router.post("/register", async (req, res) => {
     res.json({ message: "Registered successfully ✅" });
   } catch (err) {
     console.error("REGISTER ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -85,7 +85,7 @@ console.log("HASH IN DB:", user.passwordHash);
     });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: err.message });
   }
 });
 

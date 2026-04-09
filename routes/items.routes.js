@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     const items = await Item.find().sort({ createdAt: -1 });
     res.json({ items });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -25,7 +25,7 @@ router.get("/qr/:id", async (req, res) => {
     const qr = await generateQRCode(req.params.id);
     res.json({ qr });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: err.message });
   }
 });
 

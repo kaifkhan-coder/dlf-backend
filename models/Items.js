@@ -6,7 +6,7 @@ const ItemSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false, // allow null for unauthenticated reports (college demo)
     },
 
     // LOST or FOUND
