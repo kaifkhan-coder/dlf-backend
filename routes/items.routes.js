@@ -86,7 +86,7 @@ router.get("/:id", async (req, res) => {
 //   }
 // });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     console.log("BODY:", req.body);
     console.log("USER:", req.user); // 👈 check this
