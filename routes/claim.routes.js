@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
 
 // GET ALL CLAIMS (Admin)
 router.get("/", async (req, res) => {
-  const claims = await Claim.find().populate("itemId");
+  const claims = await Claim.find().populate("itemId, userId").sort({ createdAt: -1 }, "name email proofText status studentId");
   res.json(claims);
 });
 
