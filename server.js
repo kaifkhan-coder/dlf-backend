@@ -35,6 +35,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.get("/", (req, res) => res.send("API is running of Campus Trace ✅"));
+app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 console.log("Items route loaded ✅");
 app.use("/api/items", itemRoutes);
@@ -42,7 +43,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/users", UserRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/claims", ClaimRoutes);
-app.use("/uploads", express.static("uploads"));
+
 
 mongoose
   .connect(process.env.MONGO_URI)

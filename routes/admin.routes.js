@@ -31,5 +31,20 @@ router.patch("/items/:id/status", auth, admin, async (req, res) => {
   res.json({ item });
 });
 
+router.put("/claims/:id/approve", async (req, res) => {
+  const claim = await Claim.findById(req.params.id);
+  if (!claim) return res.status(404).json({ message: "Not found" });
+  claim.status = "approved";
+  await claim.save();
+  res.json({ message: "Approved" });
+});
+
+router.put("/claims/:id/reject", async (req, res) => {
+  const claim = await Claim.findById(req.params.id);
+  if (!claim) return res.status(404).json({ message: "Not found" });
+  claim.status = "rejected";
+  await claim.save();
+  res.json({ message: "Rejected" });
+});
 
 export default router;
