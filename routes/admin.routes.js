@@ -3,7 +3,7 @@ import Item from "../models/Items.js";
 import auth from "../middleware/auth.js";
 import admin from "../middleware/admin.js";
 import Claim from "../models/Claim.js";
-
+  
 const router = express.Router();
 
 // ✅ Admin: get all items
@@ -42,31 +42,46 @@ router.patch("/claims/:id/approve", auth, admin, async (req, res) => {
   res.json({ message: "Approved" });
 });
 
-router.patch("/admin/claims/:id/reject", auth, admin, async (req, res) => {
-  const claim = await Claim.findById(req.params.id);
-  if (!claim) return res.status(404).json({ message: "Not found" });
+router.patch("/claims/:id/reject", auth, admin, async (req, res) => {
+  try {
+    console.log("👉 REJECT API HIT:", req.params.id);
 
-  claim.status = "rejected";
-  await claim.save();
+    const claim = await Claim.findById(req.params.id);
+    console.log("FOUND CLAIM:", claim);
 
-  res.json({ message: "Rejected" });
+    if (!claim) return res.status(404).json({ message: "Not found" });
+
+    claim.status = "rejected";
+    await claim.save();
+
+    res.json({ message: "Rejected" });
+
+  } catch (err) {
+    console.error("❌ REJECT ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
-router.get("/admin/claims", auth, admin, async (req, res) => {
-  const claims = await Claim.find()
-    .populate("userId", "name email")
-    .populate("itemId", "title image");
+router.get("/claims", auth, admin, async (req, res) => {
+  try {
 
-  const formatted = claims.map(c => ({
-    _id: c._id,
-    userName: c.userId?.name,
-    studentId: c.userId?.email,
-    proofText: c.proofText,
-    itemId: c.itemId,
-    status: c.status
-  }));
+const claims = await Claim.find()
+  .populate("itemId", "title image")
+  .populate("userId", "name email");
 
-  res.json(formatted);
+const formatted = claims.map(c => ({
+  _id: c._id,
+  userName: c.userId?.name || "Unknown",
+  studentId: c.userId?.email || "N/A",
+  proofText: c.proofText,
+  itemId: c.itemId,
+  status: c.status
+}));
+    res.json(formatted);
+  } catch (err) {
+    console.error("❌ CLAIM ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
 });
 
 export default router;

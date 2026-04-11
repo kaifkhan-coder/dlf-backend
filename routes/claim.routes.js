@@ -40,11 +40,22 @@ router.post("/", async (req, res) => {
 });
 
 // GET ALL CLAIMS (Admin)
+// router.get("/", async (req, res) => {
+//   const claims = await Claim.find().populate("itemId", "name email proofText status studentId");
+//   res.json(claims);
+// });
 router.get("/", async (req, res) => {
-  const claims = await Claim.find().populate("itemId, userId").sort({ createdAt: -1 }, "name email proofText status studentId");
-  res.json(claims);
-});
+  try {
+    const claims = await Claim.find()
+      .populate("itemId", "title image")
+      .sort({ createdAt: -1 }); // ✅ ADD THIS
 
+    res.json(claims);
+  } catch (err) {
+    console.error("❌ CLAIM FETCH ERROR:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
 // APPROVE CLAIM
 router.put("/:id/approve", async (req, res) => {
   const claim = await Claim.findById(req.params.id);

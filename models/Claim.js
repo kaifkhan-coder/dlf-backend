@@ -6,6 +6,11 @@ const claimSchema = new mongoose.Schema({
     ref: "Item",
     required: true
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: false // allow null for unauthenticated claims (college demo)
+  },
   userName: String,
   studentId: String,
   proofText: String,
